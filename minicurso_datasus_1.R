@@ -22,16 +22,33 @@ sisSINAN <- c("SINAN-DENGUE", "SINAN-CHIKUNGUNYA", "SINAN-ZIKA",
               "SINAN-LEISHMANIOSE-TEGUMENTAR", "SINAN-LEPTOSPIROSE")
 
 # Dados do SIM-DO
+# Dados do SIM-DO
 sim <- fetch_datasus(year_start = 2023, month_start = 10, year_end = 2023, month_end = 12, uf = "SC", information_system = "SIM-DO")
 sim <- process_sim(sim)
+head(sim)
+colnames(sim)
+table(sim$SEXO)
+prop.table(table(sim$SEXO))
+barplot(table(sim$SEXO), main = 'Óbito por Sexo', ylab = 'número', xlab = 'sexo', col = c('hotpink', 'navy'))
+
+cid10_cama <- 'C50'
+
+sim_mama <- sim[grep('C50', sim$CAUSABAS_O), ]
+sim_mama$CAUSABAS_O
+summary(sim_mama$IDADE)
+sim_mama$DTNASC <- as.Date(sim_mama$DTNASC, format = "%Y-%m-%d")
+sim_mama$DTOBITO <- as.Date(sim_mama$DTOBITO, format = "%Y-%m-%d")
+sim_mama$AGE <- round(as.numeric(difftime(sim_mama$DTOBITO, sim_mama$DTNASC, units = 'days'))/365.25, 1)
+summary(sim_mama$AGE)
+
+hist(sim_mama$AGE)
+
+write.csv(sim, file = 'SIM_SC_2023.csv')
 
 # Dados do SIA
+sia <- fetch_datasus(year_start = 2023, month_start = 10, year_end = 2023, month_end = 10, uf = "SC", information_system = "SIA-PA")
 
-sia <- fetch_datasus(year_start = 2023, month_start = 10, year_end = 2023, month_end = 12, uf = "SC", information_system = "SIA-PA")
+head(sia)
 
-
-#### SE ERRRO
-
-URL="ftp://ftp.datasus.gov.br/dissemin/publicos/SIASUS/200801_/Dados/"
-
-download.file(paste0(URL, ''))
+sia_mmg <- sia[grep('020403018', sia$PA_PROC_ID), ]
+head(sia_mmg)
